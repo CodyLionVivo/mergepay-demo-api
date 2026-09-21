@@ -68,3 +68,7 @@ implementing the task must not modify them:
 
 `.github/workflows/mergepay-ci.yml` runs on pull requests targeting `main` and
 publishes three check runs: `build`, `regression-tests` and `acceptance-tests`.
+
+## Verification test
+
+This branch is used to test MergePay pull request inspection.
