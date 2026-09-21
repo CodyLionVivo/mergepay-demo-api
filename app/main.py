@@ -1,8 +1,13 @@
 """mergepay-demo-api: a minimal product catalogue service."""
 
-from fastapi import FastAPI
+import csv
+import io
+
+from fastapi import FastAPI, Response
 
 app = FastAPI(title="mergepay-demo-api")
+
+CSV_COLUMNS = ["name", "sku", "price", "stock"]
 
 PRODUCTS = [
     {
@@ -28,3 +33,19 @@ def health():
 @app.get("/products")
 def list_products():
     return PRODUCTS
+
+
+@app.get("/products/export")
+def export_products():
+    """Return every product in PRODUCTS as a CSV document."""
+    buffer = io.StringIO()
+    writer = csv.DictWriter(
+        buffer,
+        fieldnames=CSV_COLUMNS,
+        extrasaction="ignore",
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(PRODUCTS)
+
+    return Response(content=buffer.getvalue(), media_type="text/csv")
