@@ -1,6 +1,9 @@
 """mergepay-demo-api: a minimal product catalogue service."""
 
-from fastapi import FastAPI
+import csv
+import io
+
+from fastapi import FastAPI, Response
 
 app = FastAPI(title="mergepay-demo-api")
 
@@ -28,3 +31,22 @@ def health():
 @app.get("/products")
 def list_products():
     return PRODUCTS
+
+
+@app.get("/products/export")
+def export_products():
+    output = io.StringIO()
+
+    writer = csv.DictWriter(
+        output,
+        fieldnames=["name", "sku", "price", "stock"],
+        lineterminator="\n",
+    )
+
+    writer.writeheader()
+    writer.writerows(PRODUCTS)
+
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+    )
